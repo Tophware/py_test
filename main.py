@@ -309,7 +309,7 @@ def add_sector_to_map(map_obj, sector_config):
         weight=2,
         fill=True,
         fillColor=colors["sector_fill"],
-        fillOpacity=0.4,
+        fillOpacity=0.1,
     ).add_to(map_obj)
 
     # Calculate bearing and reference line coordinates
@@ -649,30 +649,6 @@ def create_rotatable_sector_demo():
         control=True,
     ).add_to(m)
 
-    # Create the original sector (no rotation)
-    original_sector = create_sector_polygon(
-        center_lat=start_lat,
-        center_lon=start_lon,
-        bearing_lat=direction_lat,
-        bearing_lon=direction_lon,
-        width_degrees=30,
-        min_radius_miles=10,
-        max_radius_miles=25,
-        rotation_degrees=0,  # No rotation
-    )
-
-    # Add original sector
-    folium.Polygon(
-        locations=original_sector,
-        popup="Original Sector (0° rotation)",
-        tooltip="Day 15 Original",
-        color="green",
-        weight=2,
-        fill=True,
-        fillColor="lightgreen",
-        fillOpacity=0.3,
-    ).add_to(m)
-
     # Create rotated versions for comparison
     rotation_angles = [45, 90, -45, -90]  # Different rotation angles to try
     colors = ["blue", "red", "orange", "purple"]
@@ -700,24 +676,8 @@ def create_rotatable_sector_demo():
             fillOpacity=0.15,
         ).add_to(m)
 
-    # Add center marker
-    folium.Marker(
-        location=[start_lat, start_lon],
-        popup="Day 15 - New Hope Bridge (Rotation Center)",
-        tooltip="Rotation Center",
-        icon=folium.Icon(color="red", icon="star"),
-    ).add_to(m)
-
     # Add layer control
     folium.LayerControl().add_to(m)
-
-    # Save the rotated demo map
-    demo_map_name = "rotatable_sector_demo.html"
-    m.save(demo_map_name)
-    print(f"Rotatable sector demo saved as '{demo_map_name}'")
-    print(
-        "This shows the original sector plus rotated versions at 45°, 90°, -45°, and -90°"
-    )
 
     return m
 
