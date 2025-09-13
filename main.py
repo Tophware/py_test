@@ -6,6 +6,26 @@ MAP_NAME = "veil.html"
 # Dataset for sector configurations
 SECTOR_DATASETS = [
     {
+        "name": "Day 3 - Tree and Red Building",
+        "center_lat": 40.830570,
+        "center_lon": -74.214254,
+        "bearing_lat": 40.830077,
+        "bearing_lon": -74.214548,
+        "width_degrees": 30,
+        "min_radius_miles": 20,
+        "max_radius_miles": 155,
+        "rotation_degrees": 0,
+        "colors": {
+            "sector_outline": "darkblue",
+            "sector_fill": "lightcyan",
+            "center_line": "navy",
+            "boundary_lines": "darkslateblue",
+        },
+        "marker_icon": "star",
+        "marker_color": "darkblue",
+        "enabled": True,
+    },
+    {
         "name": "Day 15 - New Hope Bridge",
         "center_lat": 40.364551,
         "center_lon": -74.950404,
@@ -24,7 +44,47 @@ SECTOR_DATASETS = [
         "marker_icon": "star",
         "marker_color": "red",
         "enabled": True,
-    }
+    },
+    {
+        "name": "Day 18 - Towards High Voltage Lines",
+        "center_lat": 40.447660,
+        "center_lon": -74.530389,
+        "bearing_lat": 40.448340,
+        "bearing_lon": -74.530941,
+        "width_degrees": 15,
+        "min_radius_miles": 4,
+        "max_radius_miles": 7,
+        "rotation_degrees": 0,
+        "colors": {
+            "sector_outline": "green",
+            "sector_fill": "lightgreen",
+            "center_line": "orange",
+            "boundary_lines": "darkgreen",
+        },
+        "marker_icon": "star",
+        "marker_color": "green",
+        "enabled": True,
+    },
+    {
+        "name": "Day 18 - Following Parking Lot",
+        "center_lat": 40.447660,
+        "center_lon": -74.530389,
+        "bearing_lat": 40.447930,
+        "bearing_lon": -74.530780,
+        "width_degrees": 15,
+        "min_radius_miles": 4,
+        "max_radius_miles": 7,
+        "rotation_degrees": 0,
+        "colors": {
+            "sector_outline": "darkorange",
+            "sector_fill": "lightyellow",
+            "center_line": "darkred",
+            "boundary_lines": "brown",
+        },
+        "marker_icon": "star",
+        "marker_color": "orange",
+        "enabled": True,
+    },
     # Add more sector configurations here as needed
 ]
 
