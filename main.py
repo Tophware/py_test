@@ -3,6 +3,58 @@ import math
 
 MAP_NAME = "veil.html"
 
+# Dataset for sector configurations
+SECTOR_DATASETS = [
+    {
+        "name": "Day 15 - New Hope Bridge",
+        "center_lat": 40.364551,
+        "center_lon": -74.950404,
+        "bearing_lat": 40.365207,
+        "bearing_lon": -74.947155,
+        "width_degrees": 30,
+        "min_radius_miles": 10,
+        "max_radius_miles": 25,
+        "rotation_degrees": 0,
+        "colors": {
+            "sector_outline": "blue",
+            "sector_fill": "lightblue",
+            "center_line": "red",
+            "boundary_lines": "purple",
+        },
+        "marker_icon": "star",
+        "marker_color": "red",
+        "enabled": True,
+    }
+    # Add more sector configurations here as needed
+]
+
+# Additional map elements (circles, markers, etc.)
+MAP_ELEMENTS = [
+    {
+        "type": "circle",
+        "name": "4-mile Reference Circle",
+        "lat": 40.484079,
+        "lon": -74.575389,
+        "radius_miles": 4,
+        "color": "blue",
+        "fill_color": "blue",
+        "fill_opacity": 0.3,
+        "weight": 2,
+        "enabled": True,
+    },
+    {
+        "type": "marker",
+        "name": "Original Location",
+        "lat": 40.484079,
+        "lon": -74.575389,
+        "icon": "info-sign",
+        "color": "red",
+        "popup": "Location: 40.484079, -74.575389",
+        "tooltip": "Click for coordinates",
+        "enabled": True,
+    },
+]
+
 
 def create_sector_polygon(
     center_lat,
@@ -93,17 +145,205 @@ def create_sector_polygon(
     return polygon_points
 
 
-def create_map_with_marker_and_circle():
-    # Coordinates for the marker
-    lat, lon = 40.484079, -74.575389
+def add_sector_to_map(map_obj, sector_config):
+    """
+    Add a sector polygon with reference lines to the map based on configuration.
 
-    # Create base map centered on the coordinates
-    m = folium.Map(location=[lat, lon], zoom_start=12)
+    Args:
+        map_obj: Folium map object
+        sector_config: Dictionary containing sector configuration
+    """
+    if not sector_config.get("enabled", True):
+        return
 
-    # Add street view (default)
+    # Extract configuration
+    center_lat = sector_config["center_lat"]
+    center_lon = sector_config["center_lon"]
+    bearing_lat = sector_config["bearing_lat"]
+    bearing_lon = sector_config["bearing_lon"]
+    width_degrees = sector_config["width_degrees"]
+    min_radius_miles = sector_config["min_radius_miles"]
+    max_radius_miles = sector_config["max_radius_miles"]
+    rotation_degrees = sector_config.get("rotation_degrees", 0)
+    colors = sector_config["colors"]
+    name = sector_config["name"]
+
+    # Create the sector polygon
+    sector_coords = create_sector_polygon(
+        center_lat=center_lat,
+        center_lon=center_lon,
+        bearing_lat=bearing_lat,
+        bearing_lon=bearing_lon,
+        width_degrees=width_degrees,
+        min_radius_miles=min_radius_miles,
+        max_radius_miles=max_radius_miles,
+        rotation_degrees=rotation_degrees,
+    )
+
+    # Add the sector polygon to the map
+    folium.Polygon(
+        locations=sector_coords,
+        popup=f"{name} Search Area ({min_radius_miles}-{max_radius_miles} miles, {width_degrees}° width)",
+        tooltip=f"{name} Search Sector",
+        color=colors["sector_outline"],
+        weight=2,
+        fill=True,
+        fillColor=colors["sector_fill"],
+        fillOpacity=0.4,
+    ).add_to(map_obj)
+
+    # Calculate bearing and reference line coordinates
+    lat1, lon1 = math.radians(center_lat), math.radians(center_lon)
+    lat2, lon2 = math.radians(bearing_lat), math.radians(bearing_lon)
+    dlon = lon2 - lon1
+    bearing_center = math.atan2(
+        math.sin(dlon) * math.cos(lat2),
+        math.cos(lat1) * math.sin(lat2)
+        - math.sin(lat1) * math.cos(lat2) * math.cos(dlon),
+    )
+
+    # Apply rotation
+    bearing_center += math.radians(rotation_degrees)
+
+    # Calculate reference line bearings
+    half_width = math.radians(width_degrees / 2)
+    bearing_left = bearing_center - half_width
+    bearing_right = bearing_center + half_width
+
+    # Convert miles to degrees
+    min_radius_deg = min_radius_miles / 69.0
+    max_radius_deg = max_radius_miles / 69.0
+
+    # Red center line (center to max radius)
+    center_line_end = [
+        center_lat + max_radius_deg * math.cos(bearing_center),
+        center_lon
+        + max_radius_deg
+        * math.sin(bearing_center)
+        / math.cos(math.radians(center_lat)),
+    ]
+    folium.PolyLine(
+        locations=[[center_lat, center_lon], center_line_end],
+        popup=f"{name} - Center Bearing Line",
+        tooltip="Center Bearing",
+        color=colors["center_line"],
+        weight=2,
+        dashArray="8, 8",
+        opacity=0.8,
+    ).add_to(map_obj)
+
+    # Purple left boundary line (center to min radius)
+    left_line_end = [
+        center_lat + min_radius_deg * math.cos(bearing_left),
+        center_lon
+        + min_radius_deg * math.sin(bearing_left) / math.cos(math.radians(center_lat)),
+    ]
+    folium.PolyLine(
+        locations=[[center_lat, center_lon], left_line_end],
+        popup=f"{name} - Left Boundary Line",
+        tooltip="Left Boundary",
+        color=colors["boundary_lines"],
+        weight=2,
+        dashArray="6, 6",
+        opacity=0.8,
+    ).add_to(map_obj)
+
+    # Purple right boundary line (center to min radius)
+    right_line_end = [
+        center_lat + min_radius_deg * math.cos(bearing_right),
+        center_lon
+        + min_radius_deg * math.sin(bearing_right) / math.cos(math.radians(center_lat)),
+    ]
+    folium.PolyLine(
+        locations=[[center_lat, center_lon], right_line_end],
+        popup=f"{name} - Right Boundary Line",
+        tooltip="Right Boundary",
+        color=colors["boundary_lines"],
+        weight=2,
+        dashArray="6, 6",
+        opacity=0.8,
+    ).add_to(map_obj)
+
+    # Add center marker
+    folium.Marker(
+        location=[center_lat, center_lon],
+        popup=f"{name} (Center)",
+        tooltip=f"{name} Center Point",
+        icon=folium.Icon(
+            color=sector_config["marker_color"], icon=sector_config["marker_icon"]
+        ),
+    ).add_to(map_obj)
+
+
+def add_map_element_to_map(map_obj, element_config):
+    """
+    Add a map element (circle, marker, etc.) to the map based on configuration.
+
+    Args:
+        map_obj: Folium map object
+        element_config: Dictionary containing element configuration
+    """
+    if not element_config.get("enabled", True):
+        return
+
+    element_type = element_config["type"]
+
+    if element_type == "circle":
+        # Convert miles to meters for Folium circle
+        radius_meters = element_config["radius_miles"] * 1609.344
+
+        folium.Circle(
+            location=[element_config["lat"], element_config["lon"]],
+            radius=radius_meters,
+            popup=f"{element_config['name']} - {element_config['radius_miles']}-mile radius",
+            tooltip=f"{element_config['radius_miles']}-mile radius",
+            color=element_config["color"],
+            weight=element_config["weight"],
+            fill=True,
+            fillColor=element_config["fill_color"],
+            fillOpacity=element_config["fill_opacity"],
+        ).add_to(map_obj)
+
+    elif element_type == "marker":
+        folium.Marker(
+            location=[element_config["lat"], element_config["lon"]],
+            popup=element_config["popup"],
+            tooltip=element_config["tooltip"],
+            icon=folium.Icon(
+                color=element_config["color"], icon=element_config["icon"]
+            ),
+        ).add_to(map_obj)
+
+
+def create_map_with_all_datasets():
+    """
+    Create a map with all enabled sectors and map elements from the datasets.
+    """
+    # Determine map center - use the first enabled sector or first map element
+    map_center = None
+
+    # Try to get center from first enabled sector
+    for sector in SECTOR_DATASETS:
+        if sector.get("enabled", True):
+            map_center = [sector["center_lat"], sector["center_lon"]]
+            break
+
+    # If no sectors, use first enabled map element
+    if map_center is None:
+        for element in MAP_ELEMENTS:
+            if element.get("enabled", True) and element["type"] in ["circle", "marker"]:
+                map_center = [element["lat"], element["lon"]]
+                break
+
+    # Default center if nothing found
+    if map_center is None:
+        map_center = [40.484079, -74.575389]
+
+    # Create base map
+    m = folium.Map(location=map_center, zoom_start=11)
+
+    # Add tile layers
     folium.TileLayer("OpenStreetMap", name="Street View").add_to(m)
-
-    # Add satellite view
     folium.TileLayer(
         tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
         attr="Esri",
@@ -112,29 +352,39 @@ def create_map_with_marker_and_circle():
         control=True,
     ).add_to(m)
 
-    # Add marker at the specified coordinates
-    folium.Marker(
-        location=[lat, lon],
-        popup=f"Location: {lat}, {lon}",
-        tooltip="Click for coordinates",
-        icon=folium.Icon(color="red", icon="info-sign"),
-    ).add_to(m)
+    # Add all map elements from dataset
+    for element in MAP_ELEMENTS:
+        add_map_element_to_map(m, element)
 
-    # Add 4-mile circle (4 miles = 6437.38 meters)
-    # 1 mile = 1609.344 meters, so 4 miles = 6437.376 meters
-    circle_radius = 4 * 1609.344  # 4 miles in meters
+    # Add all sectors from dataset
+    for sector in SECTOR_DATASETS:
+        add_sector_to_map(m, sector)
 
-    folium.Circle(
-        location=[lat, lon],
-        radius=circle_radius,
-        popup=f"4-mile radius circle",
-        tooltip="4-mile radius",
-        color="blue",
-        weight=2,
-        fill=True,
-        fillColor="blue",
-        fillOpacity=0.3,  # Transparent blue
-    ).add_to(m)
+    # Add layer control
+    folium.LayerControl().add_to(m)
+
+    # Save the map
+    m.save(MAP_NAME)
+
+    # Print summary
+    enabled_sectors = [s for s in SECTOR_DATASETS if s.get("enabled", True)]
+    enabled_elements = [e for e in MAP_ELEMENTS if e.get("enabled", True)]
+
+    print(
+        f"Map created with {len(enabled_sectors)} sector(s) and {len(enabled_elements)} element(s)"
+    )
+    for sector in enabled_sectors:
+        print(
+            f"  • {sector['name']}: {sector['min_radius_miles']}-{sector['max_radius_miles']} miles, {sector['width_degrees']}° width"
+        )
+    for element in enabled_elements:
+        if element["type"] == "circle":
+            print(f"  • {element['name']}: {element['radius_miles']}-mile radius")
+        else:
+            print(f"  • {element['name']}: {element['type']}")
+    print(f"Map saved as '{MAP_NAME}'")
+
+    return m
 
     # Day 15 - New Hope Bridge: Create clean sector with reference lines
     import math
@@ -173,7 +423,8 @@ def create_map_with_marker_and_circle():
     dlon = lon2 - lon1
     bearing_center = math.atan2(
         math.sin(dlon) * math.cos(lat2),
-        math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(lat2) * math.cos(dlon),
+        math.cos(lat1) * math.sin(lat2)
+        - math.sin(lat1) * math.cos(lat2) * math.cos(dlon),
     )
 
     # Calculate reference line bearings
@@ -188,7 +439,8 @@ def create_map_with_marker_and_circle():
     # Red center line (center to max radius)
     center_line_end = [
         start_lat + max_radius_deg * math.cos(bearing_center),
-        start_lon + max_radius_deg * math.sin(bearing_center) / math.cos(math.radians(start_lat))
+        start_lon
+        + max_radius_deg * math.sin(bearing_center) / math.cos(math.radians(start_lat)),
     ]
     folium.PolyLine(
         locations=[[start_lat, start_lon], center_line_end],
@@ -203,7 +455,8 @@ def create_map_with_marker_and_circle():
     # Purple left boundary line (center to min radius)
     left_line_end = [
         start_lat + min_radius_deg * math.cos(bearing_left),
-        start_lon + min_radius_deg * math.sin(bearing_left) / math.cos(math.radians(start_lat))
+        start_lon
+        + min_radius_deg * math.sin(bearing_left) / math.cos(math.radians(start_lat)),
     ]
     folium.PolyLine(
         locations=[[start_lat, start_lon], left_line_end],
@@ -218,7 +471,8 @@ def create_map_with_marker_and_circle():
     # Purple right boundary line (center to min radius)
     right_line_end = [
         start_lat + min_radius_deg * math.cos(bearing_right),
-        start_lon + min_radius_deg * math.sin(bearing_right) / math.cos(math.radians(start_lat))
+        start_lon
+        + min_radius_deg * math.sin(bearing_right) / math.cos(math.radians(start_lat)),
     ]
     folium.PolyLine(
         locations=[[start_lat, start_lon], right_line_end],
@@ -251,7 +505,7 @@ def create_map_with_marker_and_circle():
 
 
 if __name__ == "__main__":
-    create_map_with_marker_and_circle()
+    create_map_with_all_datasets()
 
 
 def create_rotatable_sector_demo():
