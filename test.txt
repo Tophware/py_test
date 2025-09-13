@@ -1,0 +1,30 @@
+Day 3
+- Coordinates: [40.249298, -74.814986]
+- Max Range: 155 miles 
+- Min Range: 20 miles
+
+Day 6
+- Coordinates: [40.357876, -74.619503]
+- Max Range: 120 miles
+- Min Range: 10 miles
+
+Day 9
+- Coordinates: [40.465280, -74.599965]
+- Max Range: 80 miles
+- Min Range: 10 miles
+
+Day 12
+- Coordinates: [40.546680, -74.533723]
+- Max Range: 45 miles
+- Min Range: 10 miles
+
+Day 15
+- Coordinates: [40.451020, -74.718836]
+- Max Range: 25 miles
+- Min Range: 10 miles
+
+Day 17
+- Coordinates: [40.370500, -74.769200]
+- Radius: 6 miles
+
+
