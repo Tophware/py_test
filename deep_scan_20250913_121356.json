@@ -1,0 +1,57 @@
+{
+  "file_path": "20250913_121356.webp",
+  "file_size": 232988,
+  "scan_timestamp": null,
+  "binary_analysis": {
+    "binary_signatures": [],
+    "text_strings": {
+      "all_strings_count": 2706,
+      "interesting_strings": [],
+      "sample_strings": [
+        "RIFF",
+        "WEBPVP8 ",
+        "\".qN",
+        "_Ms /",
+        ")6#0",
+        "pZK7",
+        "|P@& ",
+        "}PMn=",
+        "rl\"Z",
+        "&S!O"
+      ]
+    },
+    "webp_chunks": [
+      {
+        "id": "VP8 ",
+        "size": 232968,
+        "position": 12,
+        "data_preview": "50ea0b9d012a780558043ead4a9f49a624a3222e714e98c01589636e25eab01104673cdcd95b6b7b8522843af0bf64b8aaa95fbf52be4fff7e84dc97e897f3fcffff63e6bf2b7e94cf8fdfbfe4fdc9ec9fff47b07e70dffcff733e237f6fffe1eb8bfb07",
+        "data_ascii": "P\u000b\u0001*x\u0005X\u0004>JI$\".qN\u0015cn%\u0011\u0004g<[k{\":d_RO~\u0717c+~\u03cf\u07ffG~ps>#\u007fo\u0007"
+      }
+    ]
+  },
+  "pil_analysis": {
+    "format": "WEBP",
+    "mode": "RGB",
+    "size": [
+      1400,
+      1112
+    ],
+    "info_keys": [
+      "loop",
+      "background"
+    ],
+    "info_data": {
+      "loop": 1,
+      "background": [
+        255,
+        255,
+        255,
+        255
+      ]
+    },
+    "has_exif_method": true,
+    "has_getexif_method": true
+  },
+  "exifread_analysis": {}
+}

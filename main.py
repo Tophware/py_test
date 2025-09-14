@@ -1,50 +1,20 @@
 import folium
 import math
+import os
+import webbrowser
+from public_areas import PublicAreasOverlay
 
 MAP_NAME = "veil.html"
 
+# Configuration for public areas overlay
+PUBLIC_AREAS_CONFIG = {
+    "enabled": True,
+    "area_types": ["park", "hiking", "recreation", "tourism", "water"],
+    "padding_miles": 5,  # Extra padding around sectors when fetching public areas
+}
+
 # Dataset for sector configurations
 SECTOR_DATASETS = [
-    {
-        "name": "Day 3 - Tree and Red Building",
-        "center_lat": 40.830570,
-        "center_lon": -74.214254,
-        "bearing_lat": 40.830077,
-        "bearing_lon": -74.214548,
-        "width_degrees": 90,
-        "min_radius_miles": 20,
-        "max_radius_miles": 155,
-        "rotation_degrees": 0,
-        "colors": {
-            "sector_outline": "darkblue",
-            "sector_fill": "lightcyan",
-            "center_line": "navy",
-            "boundary_lines": "darkslateblue",
-        },
-        "marker_icon": "star",
-        "marker_color": "darkblue",
-        "enabled": True,
-    },
-    {
-        "name": "Day 6 - Atlantic City Race Course",
-        "center_lat": 39.457594,
-        "center_lon": -74.638904,
-        "bearing_lat": 39.458314,
-        "bearing_lon": -74.638617,
-        "width_degrees": 75,
-        "min_radius_miles": 10,
-        "max_radius_miles": 120,
-        "rotation_degrees": 0,
-        "colors": {
-            "sector_outline": "purple",
-            "sector_fill": "lavender",
-            "center_line": "darkmagenta",
-            "boundary_lines": "mediumorchid",
-        },
-        "marker_icon": "star",
-        "marker_color": "purple",
-        "enabled": True,
-    },
     {
         "name": "Day 15 - New Hope Bridge",
         "center_lat": 40.364551,
@@ -85,66 +55,6 @@ SECTOR_DATASETS = [
         "marker_color": "green",
         "enabled": True,
     },
-    {
-        "name": "Day 18 - Following Parking Lot",
-        "center_lat": 40.447660,
-        "center_lon": -74.530389,
-        "bearing_lat": 40.447930,
-        "bearing_lon": -74.530780,
-        "width_degrees": 15,
-        "min_radius_miles": 4,
-        "max_radius_miles": 7,
-        "rotation_degrees": 0,
-        "colors": {
-            "sector_outline": "darkorange",
-            "sector_fill": "lightyellow",
-            "center_line": "darkred",
-            "boundary_lines": "brown",
-        },
-        "marker_icon": "star",
-        "marker_color": "orange",
-        "enabled": True,
-    },
-    {
-        "name": "Day 9 - Van Slyke Castle",
-        "center_lat": 41.045548,
-        "center_lon": -74.262452,
-        "bearing_lat": 41.04537,
-        "bearing_lon": -74.26263,
-        "width_degrees": 45,
-        "min_radius_miles": 10,
-        "max_radius_miles": 80,
-        "rotation_degrees": 0,
-        "colors": {
-            "sector_outline": "maroon",
-            "sector_fill": "mistyrose",
-            "center_line": "darkred",
-            "boundary_lines": "crimson",
-        },
-        "marker_icon": "star",
-        "marker_color": "maroon",
-        "enabled": True,
-    },
-    {
-        "name": "Day 9 - Liberty State Park",
-        "center_lat": 40.706080,
-        "center_lon": -74.038613,
-        "bearing_lat": 40.705847,
-        "bearing_lon": -74.039175,
-        "width_degrees": 45,
-        "min_radius_miles": 10,
-        "max_radius_miles": 45,
-        "rotation_degrees": 0,
-        "colors": {
-            "sector_outline": "teal",
-            "sector_fill": "lightcyan",
-            "center_line": "darkcyan",
-            "boundary_lines": "darkslategray",
-        },
-        "marker_icon": "star",
-        "marker_color": "teal",
-        "enabled": True,
-    },
     # Add more sector configurations here as needed
 ]
 
@@ -158,6 +68,18 @@ MAP_ELEMENTS = [
         "radius_miles": 4,
         "color": "blue",
         "fill_color": "blue",
+        "fill_opacity": 0.1,
+        "weight": 2,
+        "enabled": True,
+    },
+    {
+        "type": "circle",
+        "name": "Not in range",
+        "lat": 40.447660,
+        "lon": -74.530389,
+        "radius_miles": 4,
+        "color": "red",
+        "fill_color": "red",
         "fill_opacity": 0.3,
         "weight": 2,
         "enabled": True,
@@ -472,6 +394,28 @@ def create_map_with_all_datasets():
         control=True,
     ).add_to(m)
 
+    # Add public areas overlay if enabled
+    if PUBLIC_AREAS_CONFIG.get("enabled", False):
+        try:
+            print("Loading public areas data...")
+            overlay = PublicAreasOverlay()
+
+            # Calculate bounds from sectors
+            bounds = overlay.calculate_bounds_from_sectors(
+                SECTOR_DATASETS, PUBLIC_AREAS_CONFIG.get("padding_miles", 5)
+            )
+
+            # Add public areas to map
+            m = overlay.add_public_areas_to_map(
+                m,
+                bounds,
+                PUBLIC_AREAS_CONFIG.get("area_types", ["park", "hiking", "recreation"]),
+            )
+            print("Public areas overlay added successfully!")
+
+        except Exception as e:
+            print(f"Warning: Could not load public areas overlay: {e}")
+
     # Add all map elements from dataset
     for element in MAP_ELEMENTS:
         add_map_element_to_map(m, element)
@@ -502,7 +446,19 @@ def create_map_with_all_datasets():
             print(f"  • {element['name']}: {element['radius_miles']}-mile radius")
         else:
             print(f"  • {element['name']}: {element['type']}")
+
+    if PUBLIC_AREAS_CONFIG.get("enabled", False):
+        print(
+            f"  • Public areas overlay: {', '.join(PUBLIC_AREAS_CONFIG.get('area_types', []))}"
+        )
+
     print(f"Map saved as '{MAP_NAME}'")
+    # Create clickable link to open map in browser
+    map_path = os.path.abspath(MAP_NAME)
+    print(f"\nClick to open map: file://{map_path}")
+
+    # Optionally auto-open in default browser
+    # webbrowser.open(f"file://{map_path}")
 
     return m
 
