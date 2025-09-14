@@ -1,0 +1,36 @@
+{
+  "priority_areas": [
+    {
+      "area": "Mercer County Park System",
+      "coordinates": [
+        40.518,
+        -74.595
+      ],
+      "why": "Largest wooded public area in region, multiple trail access points",
+      "search_strategy": "Focus on areas 50-100m off main trails, look for disturbed ground or vegetation",
+      "access": "Multiple parking areas, well-marked trail entrances"
+    },
+    {
+      "area": "Baldpate Mountain Area",
+      "coordinates": [
+        40.505,
+        -74.58
+      ],
+      "why": "Elevated wooded terrain, matches 'mountain' references from story context",
+      "search_strategy": "Check clearings and areas below ridge lines where object might roll",
+      "access": "Hiking trail parking, moderate difficulty access"
+    }
+  ],
+  "search_criteria": [
+    "9.5 inch tall cylindrical object (canister)",
+    "2.625 inch diameter",
+    "Likely partially buried or covered by vegetation after 3+ years",
+    "May be in natural depression or against trees/rocks",
+    "Metal detector recommended for buried objects"
+  ],
+  "timing": [
+    "Best searched during fall/winter when vegetation is minimal",
+    "Early morning or late afternoon for better lighting",
+    "After recent rain when ground disturbances are more visible"
+  ]
+}

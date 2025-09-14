@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Veil Candidates (Fixed)</name>
+
+    <Style id="lineGreen">
+      <LineStyle><color>ff00ff00</color><width>3</width></LineStyle>
+    </Style>
+    <Style id="polyBlue">
+      <LineStyle><color>ff0000ff</color><width>2</width></LineStyle>
+      <PolyStyle><color>330000ff</color></PolyStyle>
+    </Style>
+    <Style id="polyRed">
+      <LineStyle><color>ff0000ff</color><width>2</width></LineStyle>
+      <PolyStyle><color>33ff0000</color></PolyStyle>
+    </Style>
+
+    <!-- Day 16 center (for reference) -->
+    <Placemark>
+      <name>Day 16 Center</name>
+      <Point><coordinates>-74.660742,40.473668,0</coordinates></Point>
+    </Placemark>
+
+    <!-- Bearing 37° path (short reference segment) -->
+    <Placemark>
+      <name>Bearing 37 Degrees (reference)</name>
+      <styleUrl>#lineGreen</styleUrl>
+      <LineString><tessellate>1</tessellate>
+        <coordinates>
+          -74.703556,40.466583,0
+          -74.689876,40.483352,0
+          -74.676235,40.500126,0
+          -74.662632,40.516905,0
+          -74.649067,40.533689,0
+          -74.635540,40.550477,0
+          -74.622051,40.567270,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+
+    <!-- Colonial Park wooded tract (approx bounding polygon) -->
+    <Placemark>
+      <name>Colonial Park Woods</name>
+      <styleUrl>#polyBlue</styleUrl>
+      <Polygon>
+        <outerBoundaryIs><LinearRing><coordinates>
+          -74.5980,40.5290,0
+          -74.5900,40.5290,0
+          -74.5900,40.5400,0
+          -74.5980,40.5400,0
+          -74.5980,40.5290,0
+        </coordinates></LinearRing></outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+
+    <!-- DR Canal Corridor (Griggstown to Blackwells Mills) -->
+    <Placemark>
+      <name>DR Canal Corridor (Griggstown–Blackwells Mills)</name>
+      <styleUrl>#polyRed</styleUrl>
+      <Polygon>
+        <outerBoundaryIs><LinearRing><coordinates>
+          -74.6170,40.4400,0
+          -74.6050,40.4400,0
+          -74.6050,40.4800,0
+          -74.6170,40.4800,0
+          -74.6170,40.4400,0
+        </coordinates></LinearRing></outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+
+  </Document>
+</kml>

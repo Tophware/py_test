@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <Placemark>
+      <name>2-mile Search Radius</name>
+      <Style>
+        <LineStyle><color>ff00ffff</color><width>2</width></LineStyle>
+        <PolyStyle><color>3300ffff</color></PolyStyle>
+      </Style>
+      <Polygon>
+        <extrude>1</extrude>
+        <altitudeMode>clampToGround</altitudeMode>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+-74.612302,40.517391,0
+-74.611036,40.524691,0
+-74.607441,40.531586,0
+-74.601719,40.537674,0
+-74.594177,40.542602,0
+-74.585213,40.546086,0
+-74.575281,40.547927,0
+-74.564867,40.548017,0
+-74.554466,40.546346,0
+-74.544564,40.542999,0
+-74.535617,40.538150,0
+-74.528031,40.532060,0
+-74.522140,40.525060,0
+-74.518185,40.517539,0
+-74.516309,40.509933,0
+-74.516547,40.502696,0
+-74.518814,40.496283,0
+-74.522914,40.491129,0
+-74.528542,40.487622,0
+-74.535306,40.486082,0
+-74.542747,40.486745,0
+-74.550364,40.489751,0
+-74.557654,40.495134,0
+-74.564142,40.502807,0
+-74.569420,40.512560,0
+-74.573171,40.524074,0
+-74.575184,40.536943,0
+-74.575365,40.550702,0
+-74.573739,40.564837,0
+-74.570479,40.578810,0
+-74.565893,40.592081,0
+-74.560401,40.604130,0
+-74.554515,40.614474,0
+-74.548815,40.622688,0
+-74.543914,40.628424,0
+-74.540431,40.631425,0
+-74.538958,40.631531,0
+-74.540431,40.631425,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+
+    <Placemark>
+      <name>Target</name>
+      <Point><coordinates>-74.577009,40.512783,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>037° Inbound (reverse 217°) Line – 500 km</name>
+      <Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle></Style>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          -78.905551,36.507214,0
+          -74.577009,40.512783,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+
+    <Placemark>
+      <name>Richmond, VA (brg 35.9°, 412 km)</name>
+      <Point><coordinates>-77.43605,37.540726,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Philadelphia, PA (brg 38.5°, 80 km)</name>
+      <Point><coordinates>-75.165222,39.952583,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Norfolk, VA (brg 19.5°, 433 km)</name>
+      <Point><coordinates>-76.285873,36.850769,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Washington, DC (brg 48.9°, 276 km)</name>
+      <Point><coordinates>-77.036871,38.907192,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Baltimore, MD (brg 51.3°, 220 km)</name>
+      <Point><coordinates>-76.612189,39.290385,0</coordinates></Point>
+    </Placemark>
+  </Document>
+</kml>

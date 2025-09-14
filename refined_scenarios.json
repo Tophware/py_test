@@ -1,0 +1,26 @@
+[
+  {
+    "scenario": "Search Pattern Release",
+    "aircraft_bearing": 37,
+    "landing_lat": 41.53006762968877,
+    "landing_lon": -74.46178453615813,
+    "in_wedge": false,
+    "drift_distance_m": 17691.630909694784
+  },
+  {
+    "scenario": "Turn Toward Search Area",
+    "aircraft_bearing": 176.3743549198224,
+    "landing_lat": 41.333796139736606,
+    "landing_lon": -74.76273319132925,
+    "in_wedge": false,
+    "drift_distance_m": 17691.630909694784
+  },
+  {
+    "scenario": "Crosswind Dominant",
+    "aircraft_bearing": 127,
+    "landing_lat": 41.31482345055505,
+    "landing_lon": -74.67826223606123,
+    "in_wedge": false,
+    "drift_distance_m": 17691.630909694784
+  }
+]

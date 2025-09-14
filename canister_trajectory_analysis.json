@@ -1,0 +1,38 @@
+{
+  "trajectory_bearing": 279.1703457388584,
+  "day_16_conditions": {
+    "time_of_anomaly": "6:49AM",
+    "altitude": 65000,
+    "airspeed": 750,
+    "mass": 1.5,
+    "bearing": 37,
+    "dimensions": {
+      "height": 9.5,
+      "diameter": 2.625
+    },
+    "tailwind": 76,
+    "crosswind": 48,
+    "temperature_variations": true,
+    "coordinates": {
+      "lat": 41.473666,
+      "lon": -74.660742
+    }
+  },
+  "drift_analysis": {
+    "landing_lat": 41.5244274667199,
+    "landing_lon": -74.48168028254231,
+    "fall_time_seconds": 396.24,
+    "drift_distance_m": 21964.756070400002,
+    "drift_components": {
+      "tailwind_m": 13462.269849600001,
+      "crosswind_m": 8502.486220800001,
+      "total_lat_drift": 0.05076146671989968,
+      "total_lon_drift": 0.1790617174576797
+    }
+  },
+  "in_search_area": false,
+  "landing_coordinates": [
+    41.5244274667199,
+    -74.48168028254231
+  ]
+}

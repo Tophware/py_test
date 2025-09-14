@@ -296,6 +296,11 @@ def create_comprehensive_map(corners, data_categories):
     center_lat = sum(coord[0] for coord in corners) / len(corners)
     center_lon = sum(coord[1] for coord in corners) / len(corners)
 
+    # Canister coordinates from story analysis
+    canister_drop_point = [40.514417, -74.596033]  # Day 13 - Inside wedge!
+    canister_landing_estimate = [40.707900, -74.380003]  # Outside wedge
+    search_radius_miles = 0.5
+
     # Create map
     veil_map = folium.Map(location=[center_lat, center_lon], zoom_start=14)
 
@@ -469,6 +474,51 @@ def create_comprehensive_map(corners, data_categories):
         tooltip="The Veil - Search Area Boundary",
     ).add_to(veil_map)
 
+    # Add canister drop point (Day 13 - INSIDE WEDGE!)
+    folium.Marker(
+        location=canister_drop_point,
+        popup=f'<b>🎯 CANISTER DROP POINT</b><br>Day 13: {canister_drop_point[0]:.6f}, {canister_drop_point[1]:.6f}<br><b>⚠️ INSIDE SEARCH WEDGE!</b><br>Bearing: 37°<br>Dimensions: 9.5" tall x 2 5/8" diameter<br>Mass: 1.5 KG<br>Look for publicly accessible wooded areas!',
+        tooltip="🎯 CANISTER DROP POINT (Day 13)",
+        icon=folium.Icon(color="orange", icon="bullseye", prefix="fa"),
+    ).add_to(veil_map)
+
+    # Add search zone circle around drop point (0.5 mile radius)
+    folium.Circle(
+        location=canister_drop_point,
+        radius=804.672,  # 0.5 miles in meters
+        popup=f"<b>🔍 PRIMARY SEARCH ZONE</b><br>0.5 mile radius around drop point<br><b>Focus on:</b><br>🌲 Wooded areas<br>🥾 Hiking trails<br>🏞️ Public parks<br>⛪ Cemetery sections",
+        tooltip="🔍 0.5-mile Search Zone",
+        color="orange",
+        weight=3,
+        fill=True,
+        fillColor="yellow",
+        fillOpacity=0.2,
+    ).add_to(veil_map)
+
+    # Add landing estimate (outside wedge, for reference)
+    folium.Marker(
+        location=canister_landing_estimate,
+        popup=f"<b>📍 Landing Estimate</b><br>(Outside search wedge)<br>{canister_landing_estimate[0]:.6f}, {canister_landing_estimate[1]:.6f}<br>Distance: ~29.7 km from wedge",
+        tooltip="📍 Landing Estimate (Reference)",
+        icon=folium.Icon(color="gray", icon="map-marker", prefix="fa"),
+    ).add_to(veil_map)
+
+    # Add potential drop point marker
+    potential_drop_point = [40.512783, -74.577009]
+    folium.Marker(
+        location=potential_drop_point,
+        popup=f"<b>🎯 POTENTIAL DROP POINT</b><br>📍 {potential_drop_point[0]:.6f}, {potential_drop_point[1]:.6f}<br><b>⚠️ ALTERNATIVE CANISTER LOCATION</b><br>Check wooded areas within 2-mile radius<br>Focus on publicly accessible forests and trails",
+        tooltip="🎯 Potential Drop Point",
+        icon=folium.Icon(color="darkblue", icon="crosshairs", prefix="fa"),
+    ).add_to(veil_map)
+
+    # Add Sourland 37° drop path
+    veil_map = add_sourland_drop_path(veil_map)
+
+    # Add 2-mile radius circle around specified coordinates
+    circle_center = [40.512783, -74.577009]
+    veil_map = add_2mile_radius_circle(veil_map, circle_center)
+
     # Add layer control
     folium.LayerControl().add_to(veil_map)
 
@@ -540,6 +590,92 @@ def add_item_to_map(feature_group, item, category, config):
             ).add_to(feature_group)
 
 
+def add_sourland_drop_path(veil_map):
+    """Add the 37° drop line from Sourland release point"""
+
+    # Release point and trajectory coordinates
+    trajectory_points = [
+        {"distance": "Release Point", "coords": [40.453399, -74.738749]},
+        {"distance": "~5 km out", "coords": [40.489305, -74.703167]},
+        {"distance": "~10 km out", "coords": [40.525200, -74.667546]},
+        {"distance": "~15 km out", "coords": [40.561084, -74.631888]},
+        {"distance": "~20 km out", "coords": [40.596958, -74.596191]},
+    ]
+
+    # Create feature group for the drop path
+    drop_path_group = folium.FeatureGroup(name="🚁 Sourland 37° Drop Path")
+
+    # Extract coordinates for the path line
+    path_coords = [point["coords"] for point in trajectory_points]
+
+    # Add the trajectory line
+    folium.PolyLine(
+        locations=path_coords,
+        color="darkred",
+        weight=4,
+        opacity=0.8,
+        dash_array="10,5",
+        popup="<b>🚁 Sourland 37° Drop Trajectory</b><br>NE trajectory from release point<br>Track canister potential path",
+        tooltip="37° NE trajectory from Sourland release point",
+    ).add_to(drop_path_group)
+
+    # Add markers for each trajectory point
+    for i, point in enumerate(trajectory_points):
+        icon_color = "red" if i == 0 else "darkred"
+        icon_symbol = "play" if i == 0 else "circle"
+
+        popup_content = f"<b>🚁 {point['distance']}</b><br>"
+        popup_content += f"📍 {point['coords'][0]:.6f}, {point['coords'][1]:.6f}<br>"
+
+        if i == 0:
+            popup_content += "🚁 <b>SOURLAND RELEASE POINT</b><br>"
+            popup_content += "Starting point of 37° NE trajectory"
+        else:
+            popup_content += f"🎯 Trajectory point {point['distance']}<br>"
+            popup_content += "Projected canister path along 37° bearing"
+
+        folium.Marker(
+            location=point["coords"],
+            popup=popup_content,
+            tooltip=f"🚁 {point['distance']}",
+            icon=folium.Icon(color=icon_color, icon=icon_symbol, prefix="fa"),
+        ).add_to(drop_path_group)
+
+    drop_path_group.add_to(veil_map)
+    return veil_map
+
+
+def add_2mile_radius_circle(veil_map, center_coords):
+    """Add a 2-mile radius circle around specified coordinates"""
+
+    # Create feature group for the circle
+    circle_group = folium.FeatureGroup(name="🎯 2-Mile Search Radius")
+
+    # Add the 2-mile radius circle
+    folium.Circle(
+        location=center_coords,
+        radius=3218.688,  # 2 miles in meters
+        popup=f"<b>🎯 2-MILE SEARCH RADIUS</b><br>Center: {center_coords[0]:.6f}, {center_coords[1]:.6f}<br>Radius: 2 miles<br>Focus search within this area",
+        tooltip="🎯 2-Mile Search Radius",
+        color="blue",
+        weight=3,
+        fill=True,
+        fillColor="lightblue",
+        fillOpacity=0.1,
+    ).add_to(circle_group)
+
+    # Add center marker
+    folium.Marker(
+        location=center_coords,
+        popup=f"<b>🎯 SEARCH CENTER</b><br>📍 {center_coords[0]:.6f}, {center_coords[1]:.6f}<br>2-mile radius search area",
+        tooltip="🎯 Search Center",
+        icon=folium.Icon(color="blue", icon="crosshairs", prefix="fa"),
+    ).add_to(circle_group)
+
+    circle_group.add_to(veil_map)
+    return veil_map
+
+
 def get_hiding_potential(category, tags):
     """Get hiding potential analysis for each category."""
     if category == "cemeteries":
@@ -582,6 +718,9 @@ def main():
         [40.51608736, -74.60373849],  # Day 15 cuts Day 18 (West)
     ]
 
+    # Canister coordinates from story analysis
+    canister_drop_point = [40.514417, -74.596033]  # Day 13 - INSIDE WEDGE!
+
     # Create wedge polygon for filtering
     wedge_polygon = create_wedge_polygon(corners)
 
@@ -615,11 +754,18 @@ def main():
 
     print(f"\n🎯 Total items in The Veil: {total_found}")
     print(f"\n🏆 THE VEIL contains everything you need:")
-    print(f"   🏛️ Historic sites and ruins for exploration")
+    print(f"   � CANISTER DROP POINT (Day 13) - INSIDE SEARCH AREA!")
+    print(f"   🔍 0.5-mile search zone around drop point")
+    print(f"   �🏛️ Historic sites and ruins for exploration")
     print(f"   🌲 Forests and woods for natural cover")
     print(f"   ⛪ Cemeteries with secluded sections")
     print(f"   🥾 Trail networks for access")
     print(f"   🎯 All filtered to your precise search wedge!")
+    print(f"\n🌲 FOCUS YOUR SEARCH ON:")
+    print(f"   • Publicly accessible wooded areas near {canister_drop_point}")
+    print(f"   • Forest trails and hiking paths")
+    print(f"   • Cemetery wooded sections")
+    print(f"   • Parks with natural cover")
 
     return veil_map
 
